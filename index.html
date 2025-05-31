@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Text Summarizer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.1.0/src/wordcloud2.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js"></script>
+</head>
+<body onload="restoreLastInput()">
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+    <i class="fas fa-moon" id="theme-icon"></i>
+  </button>
+
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-content text-center">
+        <h1 class="hero-title">Smart Text Summarizer</h1>
+        <p class="hero-subtitle">Transform lengthy texts into concise, meaningful summaries with AI-powered analysis</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="container mb-5">
+    <div class="main-card p-4 p-md-5">
+      
+      <!-- Language Selection -->
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">
+            <i class="fas fa-globe me-2"></i>Select Language
+          </label>
+          <select class="form-select" id="languageSelect">
+            <option value="en">English</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <!-- <option value="it">Italian</option>
+            <option value="pt">Portuguese</option>
+            <option value="ru">Russian</option>
+            <option value="zh">Chinese</option>
+            <option value="ja">Japanese</option>
+            <option value="ar">Arabic</option>
+            <option value="hi">Hindi</option> -->
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">
+            <i class="fas fa-sliders-h me-2"></i>Summary Length: <span id="lengthValue" class="text-primary">3</span> sentences
+          </label>
+          <input type="range" class="form-range range-slider" min="1" max="10" value="3" id="lengthSlider" 
+                 oninput="document.getElementById('lengthValue').innerText = this.value" />
+        </div>
+      </div>
+
+      <!-- File Upload Area -->
+      <div class="mb-4">
+        <label class="form-label fw-semibold">
+          <i class="fas fa-file-upload me-2"></i>Upload File or Enter Text
+        </label>
+        <div class="file-upload-area" id="fileUploadArea" onclick="document.getElementById('fileInput').click()">
+          <input type="file" id="fileInput" accept=".txt,.doc,.docx,.pdf" style="display: none;" onchange="handleFileUpload(event)">
+          <i class="fas fa-cloud-upload-alt fa-2x text-primary mb-2"></i>
+          <p class="mb-1 fw-semibold">Click to upload or drag and drop</p>
+          <p class="text-muted small">Supports TXT, DOC, DOCX, PDF files</p>
+        </div>
+      </div>
+
+      <!-- Text Input -->
+      <div class="mb-4">
+        <label for="inputText" class="form-label fw-semibold">
+          <i class="fas fa-edit me-2"></i>Enter Your Text
+        </label>
+        <textarea class="form-control" id="inputText" rows="8" 
+                  placeholder="Paste or type your text here... You can also upload a file above."></textarea>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="d-flex flex-wrap gap-3 mb-4">
+        <button class="btn btn-custom" onclick="summarize()">
+          <i class="fas fa-magic"></i>
+          Summarize Text
+        </button>
+        <button class="btn btn-outline-custom" onclick="copySummary()">
+          <i class="fas fa-copy"></i>
+          Copy Summary
+        </button>
+        <button class="btn btn-outline-custom" onclick="downloadSummary()">
+          <i class="fas fa-download"></i>
+          Download
+        </button>
+        <button class="btn btn-outline-custom" onclick="shareSummary()">
+          <i class="fas fa-share-alt"></i>
+          Share
+        </button>
+        <button class="btn btn-outline-custom" onclick="toggleOriginal()">
+          <i class="fas fa-eye"></i>
+          Compare Original
+        </button>
+      </div>
+
+      <!-- Loader -->
+      <div class="text-center">
+        <div class="loader" id="loader"></div>
+      </div>
+
+      <!-- Summary Results -->
+      <div id="summaryBox" style="display: none;">
+        <div class="row mb-4">
+          <div class="col-md-8">
+            <h5 class="fw-bold mb-3">
+              <i class="fas fa-file-alt me-2 text-primary"></i>Summary
+            </h5>
+            <div class="summary-output" id="summaryOutput"></div>
+          </div>
+          <div class="col-md-4">
+            <div class="stats-card">
+              <h6 class="mb-2">Summary Stats</h6>
+              <div id="summaryStats"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <div class="feature-card">
+              <h6 class="fw-bold mb-3">
+                <i class="fas fa-cloud me-2 text-primary"></i>Word Cloud
+              </h6>
+              <div class="word-cloud-container">
+                <div id="wordCloud" style="width:100%; height:250px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="feature-card">
+              <h6 class="fw-bold mb-3">
+                <i class="fas fa-chart-bar me-2 text-primary"></i>Word Frequency
+              </h6>
+              <canvas id="wordChart" height="200"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Original Text Comparison -->
+      <div id="originalTextBox" style="display: none;" class="mt-4">
+        <div class="feature-card">
+          <h5 class="fw-bold mb-3">
+            <i class="fas fa-file-text me-2 text-primary"></i>Original Text
+          </h5>
+          <div class="summary-output">
+            <pre id="originalText" style="white-space: pre-wrap; font-family: inherit;"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
