@@ -3,6 +3,7 @@
     --primary-hover: #5855eb;
     --secondary-color: #f1f5f9;
     --text-color: #1e293b;
+    --placeholder-color: #1e293b; 
     --slider-color: #1e293b;
     --bg-color: #ffffff;
     --card-bg: #ffffff;
@@ -16,6 +17,7 @@
     --primary-hover: #7c3aed;
     --secondary-color: #1e293b;
     --text-color: #f8fafc;
+    --placeholder-color: #f8fafc;
     --bg-color: #0f172a;
     --slider-color: #ffffff;
     --card-bg: #1e293b;
@@ -29,12 +31,22 @@
   height: 100% !important;
 }
 
+.text-theme {
+  color: var(--text-color) !important;
+}
+
+.place-text::placeholder {
+  color: var(--placeholder-color);
+  opacity: 0.7;
+}
+
+
 .feature-card canvas {
   display: block;
 }
 
 #wordChartWrapper {
-  height: 300px; /* Or whatever you want */
+  height: 300px; 
   position: relative;
 }
 
