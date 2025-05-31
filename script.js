@@ -6,7 +6,7 @@ const stopwords = {
   // Add more languages as needed
 };
 
-let chartInstance = null;
+let chartInstance ;
 let currentLanguage = 'en';
 
 // File upload handling
@@ -191,17 +191,23 @@ function toggleTheme() {
 }
 
 function showChart(wordFreq) {
-  const topWords = Object.entries(wordFreq).sort((a, b) => b[1] - a[1]).slice(0, 10);
-  const ctx = document.getElementById("wordChart").getContext("2d");
+  const topWords = Object.entries(wordFreq)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
+
+  const canvas = document.getElementById("wordChart");
+  const ctx = canvas.getContext("2d");
+
+  // Destroy previous chart if it exists
   if (chartInstance) chartInstance.destroy();
-  
+
   chartInstance = new Chart(ctx, {
     type: "bar",
     data: {
-      labels: topWords.map(w => w[0]),
+      labels: topWords.map(([word]) => word),
       datasets: [{
         label: "Word Frequency",
-        data: topWords.map(w => w[1]),
+        data: topWords.map(([, freq]) => freq),
         backgroundColor: "rgba(99, 102, 241, 0.8)",
         borderColor: "rgba(99, 102, 241, 1)",
         borderWidth: 2,
@@ -216,9 +222,9 @@ function showChart(wordFreq) {
           display: false
         }
       },
-      scales: { 
-        y: { 
-          beginAtZero: true, 
+      scales: {
+        y: {
+          beginAtZero: true,
           ticks: { precision: 0 },
           grid: { display: false }
         },

@@ -3,9 +3,10 @@
     --primary-hover: #5855eb;
     --secondary-color: #f1f5f9;
     --text-color: #1e293b;
+    --slider-color: #1e293b;
     --bg-color: #ffffff;
     --card-bg: #ffffff;
-    --border-color: #e2e8f0;
+    --border-color: #000000;
     --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
@@ -16,10 +17,34 @@
     --secondary-color: #1e293b;
     --text-color: #f8fafc;
     --bg-color: #0f172a;
+    --slider-color: #ffffff;
     --card-bg: #1e293b;
-    --border-color: #334155;
+    --border-color: #fffefe;
     --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
     --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+#wordChart {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.feature-card canvas {
+  display: block;
+}
+
+#wordChartWrapper {
+  height: 300px; /* Or whatever you want */
+  position: relative;
+}
+
+
+input[type="range"]::-webkit-slider-thumb {
+  background-color: var(--slider-color);
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  background: var(--slider-color);
 }
 
 * {
